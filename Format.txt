@@ -1,0 +1,7 @@
+'''
+- 번호 : 
+- 제목 : 
+'''
+
+import sys
+input = sys.stdin.readline
