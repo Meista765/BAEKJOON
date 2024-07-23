@@ -55,7 +55,7 @@ def my_remove(dna:str):
         my_list[2] -= 1
         if my_list[2] == check_list[2] - 1:
             achieved -= 1
-    elif dna == 'G':
+    elif dna == 'T':
         my_list[3] -= 1
         if my_list[3] == check_list[3] - 1:
             achieved -= 1
@@ -80,8 +80,8 @@ if achieved == 4:
 # 4. P ~ S-1까지 탐색
 for new in range(P, S):
     old = new - P
-    my_remove(old)
-    my_add(new)
+    my_remove(A[old])
+    my_add(A[new])
     if achieved == 4:
         count += 1
 
