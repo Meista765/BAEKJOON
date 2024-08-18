@@ -33,3 +33,4 @@ for _ in range(T):
 
 for i in range(1, N+1):
     print(str(SW[i]) + ' ')
+    
