@@ -22,8 +22,8 @@ def BFS():
                 queue.append((new_r, new_c))                    # 다음 작업 구역 추가
 
     # 디버그용 출력
-    # for row in tomato:
-        # print(*row)
+    for row in tomato:
+        print(*row)
     
     # 안 익은 토마토가 있으면 -1 출력, 그 외에는 최소 일수 출력
     max_day = 0  # 최소 일수 (max라 적은 이유는 배열에서의 최대가 곧 최소이므로)
