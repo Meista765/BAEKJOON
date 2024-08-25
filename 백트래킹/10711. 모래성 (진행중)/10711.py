@@ -5,40 +5,49 @@ from collections import deque
 
 len_r, len_c = map(int, input().split())
 
+# 작업 좌표를 추가해주는 함수
+def fill_queue():
+    global queue
+    
+    # 작업 좌표는 0을 기준으로 8방향에 9가 아닌 모래성
+    visited = [[0 for _ in range(len_c)] for _ in range(len_r)]
+    for r in range(len_r):
+        for c in range(len_c):
+            if A[r][c] == 0:
+                # 8방향: ↓, ↘, →, ↗, ↑, ↖, ←, ↙
+                for dr, dc in [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]:
+                    nr = r + dr
+                    nc = c + dc
+                if 0 <= nr < len_r and 0 <= nc < len_c and A[nr][nc] != 0 and A[nr][nc] != 9 and not visited[nr][nc]:
+                    visited[nr][nc] = 1
+                    queue.append((nr, nc))
+
 A = []
 for _ in range(len_r):
     cli = input().rstrip().replace('.','0')
     A.append(list(map(int, list(cli))))
 
 queue = deque()
-for r in range(len_r):
-    for c in range(len_c):
-        if A[r][c] != 0 and A[r][c] != 9:
-            queue.append((r, c))
 
 wave = 0
 # 이전 Queue 사이즈와 변동이 없으면 반복 종료
-prev_q_size = len(queue)
-while queue:
+prev_q_size = float('inf')
+while True:
+    # 작업 좌표 추가
+    fill_queue()
+    
     # 한 바퀴 순회
-    for _ in range(len(queue)):
-        pos_r, pos_c = queue.popleft()
+    while queue:
+        r, c = queue.popleft()
         
-        # 8방향 인근에 열려있는 개수 
+        # 작업 구간 주변 8방향으로 0이 몇개인지 카운트
         cnt = 0
         # 8방향: ↓, ↘, →, ↗, ↑, ↖, ←, ↙
         for dr, dc in [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]:
-            new_r = pos_r + dr
-            new_c = pos_c + dc
-            if 0 <= new_r < len_r and 0 <= new_c < len_c and A[new_r][new_c] == 0:
-                cnt += 1
-        
-        # 본인보다 크거나 같은 수의 0이 주변에 있다면 무너뜨림
-        if cnt >= A[pos_r][pos_c]:
-            A[pos_r][pos_c] = 0
-        # 그렇지 않으면 추후 작업을 위해 큐에 다시 보관
-        else:
-            queue.append((pos_r, pos_c))
+            nr = r + dr
+            nc = c + dc
+        if 0 <= nr < len_r and 0 <= nc < len_c and A[nr][nc] != 0 and A[nr][nc] != 9:
+            queue.append((nr, nc))
     
     # 반복 한 사이클 완료
     wave += 1
@@ -50,8 +59,8 @@ while queue:
     else: 
         break
     
-    # 디버그용 코드
-    for row in A:
-        print(*row)
+    # # 디버그용 코드
+    # for row in A:
+    #     print(*row)
 
 print(wave)
