@@ -29,7 +29,7 @@ def DFS(idx):
     if idx == max_depth:
         for row in A:
             print(*row)
-        return
+        exit()
     else:
         pos_r, pos_c = need_to_fill[idx]
         for num in range(1, 10):  # num= 1 ~ 9
