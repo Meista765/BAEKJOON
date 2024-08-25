@@ -9,18 +9,17 @@ len_r, len_c = map(int, input().split())
 def fill_queue():
     global queue
     
-    # 작업 좌표는 0을 기준으로 8방향에 9가 아닌 모래성
-    visited = [[0 for _ in range(len_c)] for _ in range(len_r)]
+    # 작업 좌표는 0과 9가 아니며, 본인을 기준으로 8방향에 0이 있는 모래성
     for r in range(len_r):
         for c in range(len_c):
-            if A[r][c] == 0:
+            if A[r][c] != 0 and A[r][c] != 9:
                 # 8방향: ↓, ↘, →, ↗, ↑, ↖, ←, ↙
                 for dr, dc in [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]:
                     nr = r + dr
                     nc = c + dc
-                if 0 <= nr < len_r and 0 <= nc < len_c and A[nr][nc] != 0 and A[nr][nc] != 9 and not visited[nr][nc]:
-                    visited[nr][nc] = 1
-                    queue.append((nr, nc))
+                    if 0 <= nr < len_r and 0 <= nc < len_c and A[nr][nc] == 0:
+                        queue.append((r, c))
+                        break
 
 A = []
 for _ in range(len_r):
@@ -30,12 +29,12 @@ for _ in range(len_r):
 queue = deque()
 
 wave = 0
-# 이전 Queue 사이즈와 변동이 없으면 반복 종료
-prev_q_size = float('inf')
 while True:
     # 작업 좌표 추가
     fill_queue()
     
+    # 추후 0으로 덮어씌울 작업 리스트
+    working_list = deque()
     # 한 바퀴 순회
     while queue:
         r, c = queue.popleft()
@@ -46,21 +45,29 @@ while True:
         for dr, dc in [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]:
             nr = r + dr
             nc = c + dc
-        if 0 <= nr < len_r and 0 <= nc < len_c and A[nr][nc] != 0 and A[nr][nc] != 9:
-            queue.append((nr, nc))
+            if 0 <= nr < len_r and 0 <= nc < len_c and A[nr][nc] == 0:
+                cnt += 1
+        
+        # 탐색 후 카운트가 탐색중인 칸의 값보다 크거나 같으면 모래성을 허묾
+        if cnt >= A[r][c]:
+            working_list.append((r, c))
     
-    # 반복 한 사이클 완료
-    wave += 1
-    
-    # 이후 반복 여부 확인
-    if prev_q_size > len(queue):
-        prev_q_size = len(queue)
-    # prev_q_size <= len(queue) 이지만 사실상 prev_q_size == len(queue)
-    else: 
+    # 작업할 내용이 없으면 break
+    if not working_list:
         break
+    else:
+        # 작업 리스트에 있는 좌표를 모두 0으로 바꿈
+        while working_list:
+            r, c = working_list.popleft()
+            A[r][c] = 0
+    
+    # 반복 한 사이클 추가
+        wave += 1
     
     # # 디버그용 코드
+    # print(f'#{wave}')
     # for row in A:
     #     print(*row)
+    # print()
 
 print(wave)
