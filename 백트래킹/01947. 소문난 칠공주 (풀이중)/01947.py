@@ -9,7 +9,12 @@ def DFS(k, pos_r, pos_c, cnt_S, cnt_Y):
     
     if k == 7:
         answer += 1
+        for row in visited:
+            print(*row)
     else:
+        # 방문 리스트 체크
+        visited[pos_r][pos_c] = 1
+        
         # 파벌 구성원 카운팅
         if A[pos_r][pos_c] == 'S':
             cnt_S += 1
@@ -21,9 +26,10 @@ def DFS(k, pos_r, pos_c, cnt_S, cnt_Y):
             new_r = pos_r + dr
             new_c = pos_c + dc
             if 0 <= new_r < N and 0 <= new_c < N and not visited[new_r][new_c]:
-                visited[new_r][new_c] = 1
                 DFS(k + 1, new_r, new_c, cnt_S, cnt_Y)
-                visited[new_r][new_c] = 0
+        
+        # 방문 리스트 반환
+        visited[pos_r][pos_c] = 0
 N = 5
 A = [list(input()) for _ in range(N)]
 
@@ -32,9 +38,6 @@ visited = [[0 for _ in range(N)] for _ in range(N)]
 
 for r in range(N):
     for c in range(N):
-        visited[r][c] = 1
         DFS(0, r, c, 0, 0)
-        visited[r][c] = 0
 
-# 시작과 끝이 바뀐 경우로 인해 2배의 결과가 나옴
-print(answer // 2)
+print(answer)
