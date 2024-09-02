@@ -2,59 +2,48 @@ import sys
 input = sys.stdin.readline
 sys.setrecursionlimit(10000)
 
-max_cnt = 0
-def backtrack(idx:int, cur_cnt:int, visited:list):
-    global max_cnt
-    
-    # 최대 깊이에 도달했을 때
-    if idx == max_depth:
-        max_cnt = max(max_cnt, cur_cnt)
-    else:
-        pos_r, pos_c = coord[idx]
-        
-        # Case 1) 해당 자리에 비숍을 배치할 수 있음
-        if not visited[pos_r][pos_c]:
-            # Case 1-1) 배치하지 않음 -> 다음 배치할 수 있는 위치에 배치함
-            for i in range(idx + 1, max_depth):
-                r, c = coord[i]
-                if not visited[r][c]:
-                    backtrack(i, cur_cnt, visited)
-                    break
-            else:
-                backtrack(max_depth, cur_cnt, visited)
-            
-            # Case 1-2) 배치함
-            # 방문 체크
-            visited[pos_r][pos_c] = 1
-            # ↖, ↗, ↙, ↘
-            for dr, dc in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
-                new_r = pos_r + dr
-                new_c = pos_c + dc
-                while 0 <= new_r < N and 0 <= new_c < N:
-                    visited[new_r][new_c] = 1
-                    new_r += dr
-                    new_c += dc
-            
-            for i in range(idx + 1, max_depth):
-                r, c = coord[i]
-                if not visited[r][c]:
-                    backtrack(i, cur_cnt + 1, visited)
-                    break
-            else:
-                backtrack(max_depth, cur_cnt + 1, visited)
+def backtrack(positions, idx, count):
+    global max_count
+    if idx == len(positions):
+        max_count = max(max_count, count)
+        return
+
+    r, c = positions[idx]
+    if not visited[0][r + c] and not visited[1][r - c + N - 1]:
+        visited[0][r + c] = True
+        visited[1][r - c + N - 1] = True
+        backtrack(positions, idx + 1, count + 1)
+        visited[0][r + c] = False
+        visited[1][r - c + N - 1] = False
+
+    backtrack(positions, idx + 1, count)
 
 N = int(input())
-A = [list(map(int, input().split())) for _ in range(N)]
+arr = [list(map(int, input().split())) for _ in range(N)]
 
-# 방문해야 하는 좌표 수집
-coord = []
-for r in range(N):
-    for c in range(N):
-        if A[r][c] == 1:
-            coord.append((r, c))
+# 방문 리스트 제작
+visited = [[False] * (2 * N - 1) for _ in range(2)]
 
-max_depth = len(coord)
+# 흑과 백 칸을 분리하여 비숍을 놓을 수 있는 위치를 미리 계산
+black_positions = []
+white_positions = []
 
-backtrack(0, 0, [[0 for _ in range(N)] for _ in range(N)])
+for i in range(N):
+    for j in range(N):
+        if arr[i][j] == 1:
+            if (i + j) % 2 == 0:
+                black_positions.append((i, j))
+            else:
+                white_positions.append((i, j))
 
-print(max_cnt)
+# 각 색에 대해 최대 비숍의 수를 구한 뒤 합산
+max_count = 0
+backtrack(black_positions, 0, 0)
+black_max = max_count
+
+max_count = 0
+backtrack(white_positions, 0, 0)
+white_max = max_count
+
+# 최종 결과 출력
+print(black_max + white_max)
