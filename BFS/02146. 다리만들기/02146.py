@@ -1,8 +1,8 @@
 import sys; input = sys.stdin.readline
 from collections import deque
 
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 def label_island(start_r, start_c, label):
     queue = deque()
